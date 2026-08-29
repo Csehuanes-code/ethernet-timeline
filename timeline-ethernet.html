@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ethernet — Línea de tiempo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1B2A41;
+    --muted:#5B6674;
+    --bg:#F3F5F8;
+    --card:#FFFFFF;
+    --c1:#2E86AB; /* azul */
+    --c2:#3AA655; /* verde */
+    --c3:#1B2A41; /* marino */
+    --c4:#D8A31A; /* dorado */
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    font-family:'Inter', sans-serif;
+    color:var(--ink);
+  }
+  .page{
+    max-width:900px;
+    margin:0 auto;
+    padding:56px 24px 90px;
+  }
+  header{
+    margin-bottom:56px;
+  }
+  header .eyebrow{
+    font-family:'Poppins',sans-serif;
+    font-weight:700;
+    font-size:0.75rem;
+    letter-spacing:3px;
+    color:var(--muted);
+    text-transform:uppercase;
+  }
+  header h1{
+    font-family:'Poppins',sans-serif;
+    font-weight:800;
+    font-size:2.4rem;
+    line-height:1.05;
+    margin:6px 0 4px;
+    letter-spacing:-0.5px;
+  }
+  header h1 span{
+    display:block;
+    background:linear-gradient(90deg,var(--c1),var(--c2));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  header p.subtitle{
+    margin:10px 0 0;
+    color:var(--muted);
+    font-size:1rem;
+    max-width:560px;
+  }
+
+  .section-divider{
+    position:relative;
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin:52px 0 30px 0;
+  }
+  .section-divider .tag{
+    font-family:'Poppins',sans-serif;
+    font-weight:700;
+    font-size:0.78rem;
+    letter-spacing:2px;
+    color:#fff;
+    background:var(--ink);
+    padding:7px 16px;
+    border-radius:999px;
+    white-space:nowrap;
+  }
+  .section-divider .line{
+    flex:1;
+    height:2px;
+    background:repeating-linear-gradient(90deg,#c7ccd4 0,#c7ccd4 6px,transparent 6px,transparent 12px);
+  }
+
+  .timeline{
+    position:relative;
+    padding-left:150px;
+  }
+  .timeline .spine{
+    position:absolute;
+    left:110px;
+    top:6px;
+    bottom:6px;
+    width:4px;
+    background:#DEE3EA;
+    border-radius:4px;
+  }
+
+  .item{
+    position:relative;
+    margin-bottom:30px;
+    padding:18px 22px 18px 0;
+    border-radius:14px;
+    overflow:hidden;
+  }
+  .item:nth-child(even){
+    background:rgba(0,0,0,0.02);
+  }
+
+  .badge{
+    position:absolute;
+    left:-150px;
+    top:14px;
+    width:58px;
+    height:58px;
+    border-radius:50%;
+    background:var(--card);
+    border:3px solid var(--c);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 3px 10px rgba(27,42,65,0.10);
+    z-index:2;
+  }
+  .badge svg{
+    width:26px;
+    height:26px;
+    stroke:var(--c);
+    fill:none;
+    stroke-width:1.8;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+  }
+
+  .dot{
+    position:absolute;
+    left:-40px;
+    top:26px;
+    width:16px;
+    height:16px;
+    border-radius:50%;
+    background:var(--c);
+    border:4px solid #fff;
+    box-shadow:0 0 0 2px var(--c);
+    z-index:3;
+  }
+
+  .content{
+    position:relative;
+    z-index:1;
+    max-width:600px;
+  }
+  .arrow-decor{
+    position:absolute;
+    right:-10px;
+    top:-6px;
+    width:130px;
+    height:70px;
+    opacity:0.07;
+    background:var(--c);
+    clip-path:polygon(0 22%,55% 22%,55% 0,100% 50%,55% 100%,55% 78%,0 78%);
+    z-index:0;
+    pointer-events:none;
+  }
+
+  .year{
+    font-family:'Poppins',sans-serif;
+    font-weight:800;
+    font-size:1.5rem;
+    color:var(--c);
+    letter-spacing:0.5px;
+    display:block;
+  }
+  .rule{
+    display:block;
+    width:64px;
+    height:4px;
+    border-radius:3px;
+    background:var(--c);
+    margin:8px 0 10px;
+  }
+  h3{
+    margin:0 0 5px;
+    font-family:'Poppins',sans-serif;
+    font-weight:700;
+    font-size:1.02rem;
+    color:var(--ink);
+  }
+  p{
+    margin:0;
+    color:var(--muted);
+    font-size:0.93rem;
+    line-height:1.55;
+  }
+
+  footer{
+    margin-top:60px;
+    padding-top:20px;
+    border-top:1px solid #DEE3EA;
+    color:var(--muted);
+    font-size:0.8rem;
+    line-height:1.6;
+  }
+
+  @media (max-width:640px){
+    .timeline{padding-left:0;}
+    .timeline .spine{left:22px;}
+    .badge{position:static;width:44px;height:44px;margin-bottom:8px;}
+    .badge svg{width:20px;height:20px;}
+    .dot{display:none;}
+    .item{padding:16px 16px 16px 46px;}
+    header h1{font-size:1.9rem;}
+  }
+</style>
+</head>
+<body>
+
+<!-- Sprite de iconos -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <symbol id="ic-bolt" viewBox="0 0 24 24"><polygon points="13,2 4,14 11,14 10,22 20,9 13,9" stroke-linejoin="round"/></symbol>
+    <symbol id="ic-link" viewBox="0 0 24 24"><path d="M9 17H6a5 5 0 0 1 0-10h3"/><path d="M15 7h3a5 5 0 0 1 0 10h-3"/><line x1="8" y1="12" x2="16" y2="12"/></symbol>
+    <symbol id="ic-book" viewBox="0 0 24 24"><path d="M4 4.5C4 3.7 4.7 3 5.5 3H12v18H5.5c-.8 0-1.5-.7-1.5-1.5z"/><path d="M20 4.5c0-.8-.7-1.5-1.5-1.5H12v18h6.5c.8 0 1.5-.7 1.5-1.5z"/></symbol>
+    <symbol id="ic-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><circle cx="17.5" cy="9" r="2.6"/><path d="M15.5 20c.2-2.8 1.9-4.7 4-5.4"/></symbol>
+    <symbol id="ic-flag" viewBox="0 0 24 24"><line x1="5" y1="21" x2="5" y2="3"/><path d="M5 4h13l-3.5 4L18 12H5"/></symbol>
+    <symbol id="ic-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.7 2.7L16 9.5"/></symbol>
+    <symbol id="ic-chart" viewBox="0 0 24 24"><line x1="4" y1="20" x2="20" y2="20"/><rect x="6" y="13" width="3" height="7"/><rect x="11" y="9" width="3" height="11"/><rect x="16" y="5" width="3" height="15"/></symbol>
+    <symbol id="ic-server" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="6" rx="1.4"/><rect x="3" y="14" width="18" height="6" rx="1.4"/><circle cx="7" cy="7" r="0.8" fill="currentColor" stroke="none"/><circle cx="7" cy="17" r="0.8" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="ic-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c2.8 2.5 4.2 5.7 4.2 9s-1.4 6.5-4.2 9c-2.8-2.5-4.2-5.7-4.2-9S9.2 5.5 12 3z"/></symbol>
+  </defs>
+</svg>
+
+<div class="page">
+  <header>
+    <div class="eyebrow">Timeline Infographics</div>
+    <h1>ETHERNET<span>Historia y evolución (1970–2026)</span></h1>
+    <p class="subtitle">De las primeras redes de difusión en Hawái hasta el camino hacia el Terabit Ethernet, con fuentes del IEEE 802.3 y del Ultra Ethernet Consortium.</p>
+  </header>
+
+  <div class="timeline">
+    <div class="spine"></div>
+
+    <div class="section-divider"><span class="tag">Parte I — Orígenes</span><span class="line"></span></div>
+
+    <div class="item" style="--c:var(--c1)">
+      <div class="badge"><svg><use href="#ic-globe"/></svg></div>
+      <div class="dot"></div>
+      <div class="arrow-decor"></div>
+      <div class="content">
+        <span class="year">1970</span>
+        <span class="rule"></span>
+        <h3>ALOHANET</h3>
+        <p>Primeras experiencias de redes de difusión en la Universidad de Hawái, con los protocolos ALOHA puro y ranurado.</p>
+      </div>
+    </div>
+
+    <div class="item" style="--c:var(--c2)">
+      <div class="badge"><svg><use href="#ic-bolt"/></svg></div>
+      <div class="dot"></div>
+      <div class="arrow-decor"></div>
+      <div class="content">
+        <span class="year">1972</span>
+        <span class="rule"></span>
+        <h3>Xerox PARC</h3>
+        <p>Robert Metcalfe llega al Xerox PARC, donde se diseñan los ordenadores Alto y las primeras impresoras láser.</p>
+      </div>
+    </div>
+
+    <div class="item" style="--c:var(--c3)">
+      <div class="badge"><svg><use href="#ic-bolt"/></svg></div>
+      <div class="dot"></div>
+      <div class="arrow-decor"></div>
+      <div class="content">
+        <span class="year">1973</span>
+        <span class="rule"></span>
+        <h3>Nace Ethernet</h3>
+        <p>Metcalfe y Boggs conectan dos Alto (Michelson y Morley) a 2,94 Mbps sobre un segmento coaxial de 1,6 km.</p>
+      </div>
+    </div>
+
+    <div class="item" style="--c:var(--c4)">
+      <div class="badge"><svg><use href="#ic-book"/></svg></div>
+      <div class="dot"></div>
+      <div class="arrow-decor"></div>
+      <div class="content">
+        <span class="year">1975</span>
+        <span class="rule"></span>
+        <h3>Difusión científica</h3>
+        <p>Metcalfe y Boggs envían el primer artículo académico sobre Ethernet a Communications of the ACM.</p>
+      </div>
+    </div>
+
+    <div class="item" style="--c:var(--c1)">
+      <div class="badge"><svg><use href="#ic-flag"/></svg></div>
+      <div class="dot"></div>
+      <div class="arrow-decor"></div>
+      <div class="content">
+        <span class="year">1976</span>
+        <span class="rule"></span>
+        <h3>División SSD de Xerox</h3>
+        <p>Xerox crea la división SSD y comercializa la red bajo el nombre temporal de "X-wire".</p>
+      </div>
+    </div>
+
+    <div class="item" style="--c:var(--c2)">
+      <div class="badge"><svg><use href="#ic-users"/></svg></div>
+      <div class="dot"></div>
+      <div class="arrow-decor"></div>
+      <div class="content">
+        <span class="year">1979</span>
+        <span class="rule"></span>
+        <h3>Alianza DIX y 3Com</h3>
+        <p>DEC, Intel y Xerox forman la alianza DIX. Metcalfe deja Xerox y funda 3Com.</p>
+      </div>
+    </div>
+
+    <div class="item" style="--c:var(--c3)">
+      <div class="badge"><svg><use href="#ic-flag"/></svg></div>
+      <div class="dot"></div>
+      <div class="arrow-decor"></div>
+      <div class="content">
+        <span class="year">1980</span>
+        <span class="rule"></span>
+        <h3>Proyecto IEEE 802 y Libro Azul</h3>
+        <p>El IEEE crea el proyecto 802 para LAN; DIX publica en septiembre la especificación 1.0 a 10 Mbps.</p>
+      </div>
+    </div>
+
+    <div class="item" style="--c:var(--c4)">
+      <div class="badge"><svg><use href="#ic-book"/></svg></div>
+      <div class="dot"></div>
+      <div class="arrow-decor"></div>
+      <div class="content">
+        <span class="year">1982</span>
+        <span class="rule"></span>
+        <h3>Libro Azul 2.0</h3>
+        <p>DIX publica la versión 2.0; 3Com lanza las primeras tarjetas comerciales 10BASE2 para PC.</p>
+      </div>
+    </div>
+
+    <div class="item" style="--c:var(--c1)">
+      <div class="badge"><svg><use href="#ic-check"/></svg></div>
+      <div class="dot"></div>
+      <div class="arrow-decor"></div>
+      <div class="content">
+        <span class="year">1983</span>
+        <span class="rule"></span>
+        <h3>Aprobación de IEEE 802.3</h3>
+        <p>El IEEE aprueba el estándar oficial 802.3, casi idéntico a DIX Ethernet, con soporte inicial para 10BASE5.</p>
+      </div>
+    </div>
+
+    <div class="item" style="--c:var(--c2)">
+      <div class="badge"><svg><use href="#ic-check"/></svg></div>
+      <div class="dot"></div>
+      <div class="arrow-decor"></div>
+      <div class="content">
+        <span class="year">1984</span>
+        <span class="rule"></span>
+        <h3>Estandarización ANSI</h3>
+        <p>El ANSI aprueba formalmente el estándar de red IEEE 802.3.</p>
+      </div>
+    </div>
+
+    <div class="item" style="--c:var(--c3)">
+      <div class="badge"><svg><use href="#ic-chart"/></svg></div>
+      <div class="dot"></div>
+      <div class="arrow-decor"></div>
+      <div class="content">
+        <span class="year">1988</span>
+        <span class="rule"></span>
+        <h3>Optimización de TCP</h3>
+        <p>Van Jacobson demuestra transferencias reales de 8 Mbps sobre Ethernet gracias a mejoras de software en TCP.</p>
+      </div>
+    </div>
+
+    <div class="item" style="--c:var(--c4)">
+      <div class="badge"><svg><use href="#ic-bolt"/></svg></div>
+      <div class="dot"></div>
+      <div class="arrow-decor"></div>
+      <div class="content">
+        <span class="year">1992</span>
+        <span class="rule"></span>
+        <h3>Salto a 100 Mbps</h3>
+        <p>Grand Junction lanza una versión propietaria de Ethernet a 100 Mbps, impulsando la estandarización formal.</p>
+      </div>
+    </div>
+
+    <div class="item" style="--c:var(--c1)">
+      <div class="badge"><svg><use href="#ic-check"/></svg></div>
+      <div class="dot"></div>
+      <div class="arrow-decor"></div>
+      <div class="content">
+        <span class="year">1995</span>
+        <span class="rule"></span>
+        <h3>Fast Ethernet (802.3u)</h3>
+        <p>Se ratifica el suplemento 802.3u, consolidando 100 Mbps sobre fibra óptica y cable UTP.</p>
+      </div>
+    </div>
+
+    <div class="item" style="--c:var(--c2)">
+      <div class="badge"><svg><use href="#ic-server"/></svg></div>
+      <div class="dot"></div>
+      <div class="arrow-decor"></div>
+      <div class="content">
+        <span class="year">1998</span>
+        <span class="rule"></span>
+        <h3>Gigabit sobre fibra (802.3z)</h3>
+        <p>El IEEE aprueba 1000 Mbps (1 Gbps) para medios de fibra óptica.</p>
+      </div>
+    </div>
+
+    <div class="item" style="--c:var(--c3)">
+      <div class="badge"><svg><use href="#ic-server"/></svg></div>
+      <div class="dot"></div>
+      <div class="arrow-decor"></div>
+      <div class="content">
+        <span class="year">1999</span>
+        <span class="rule"></span>
+        <h3>Gigabit sobre cobre (802.3ab)</h3>
+        <p>Se aprueba 1000BASE-T: 1 Gbps sobre cable de cobre UTP categoría 5.</p>
+      </div>
+    </div>
+
+    <div class="section-divider"><span class="tag">Parte II — La era del Terabit</span><span class="line"></span></div>
+
+    <div class="item" style="--c:var(--c4)">
+      <div class="badge"><svg><use href="#ic-server"/></svg></div>
+      <div class="dot"></div>
+      <div class="arrow-decor"></div>
+      <div class="content">
+        <span class="year">2002</span>
+        <span class="rule"></span>
+        <h3>10 Gigabit Ethernet (802.3ae)</h3>
+        <p>Ratificación de 10 Gb/s en modo full-duplex puro, dejando atrás el CSMA/CD compartido y los hubs.</p>
+      </div>
+    </div>
+
+    <div class="item" style="--c:var(--c1)">
+      <div class="badge"><svg><use href="#ic-server"/></svg></div>
+      <div class="dot"></div>
+      <div class="arrow-decor"></div>
+      <div class="content">
+        <span class="year">2006</span>
+        <span class="rule"></span>
+        <h3>10GBASE-T (802.3an)</h3>
+        <p>10 Gigabit Ethernet sobre cableado de par trenzado, clave para la conexión de servidores.</p>
+      </div>
+    </div>
+
+    <div class="item" style="--c:var(--c2)">
+      <div class="badge"><svg><use href="#ic-chart"/></svg></div>
+      <div class="dot"></div>
+      <div class="arrow-decor"></div>
+      <div class="content">
+        <span class="year">2010</span>
+        <span class="rule"></span>
+        <h3>40/100 Gigabit Ethernet (802.3ba)</h3>
+        <p>Primer estándar en especificar dos velocidades simultáneas, pensado para backbones y centros de datos.</p>
+      </div>
+    </div>
+
+    <div class="item" style="--c:var(--c3)">
+      <div class="badge"><svg><use href="#ic-link"/></svg></div>
+      <div class="dot"></div>
+      <div class="arrow-decor"></div>
+      <div class="content">
+        <span class="year">2016</span>
+        <span class="rule"></span>
+        <h3>25G y 2.5G/5GBASE-T</h3>
+        <p>802.3by (25 Gbps para data centers) y 802.3bz (multigigabit sobre cableado ya instalado).</p>
+      </div>
+    </div>
+
+    <div class="item" style="--c:var(--c4)">
+      <div class="badge"><svg><use href="#ic-chart"/></svg></div>
+      <div class="dot"></div>
+      <div class="arrow-decor"></div>
+      <div class="content">
+        <span class="year">2017</span>
+        <span class="rule"></span>
+        <h3>200/400 Gigabit Ethernet (802.3bs)</h3>
+        <p>Nace lo que la industria llama "Terabit Ethernet": velocidades Ethernet más allá de los 100 Gbps.</p>
+      </div>
+    </div>
+
+    <div class="item" style="--c:var(--c1)">
+      <div class="badge"><svg><use href="#ic-book"/></svg></div>
+      <div class="dot"></div>
+      <div class="arrow-decor"></div>
+      <div class="content">
+        <span class="year">2018–2020</span>
+        <span class="rule"></span>
+        <h3>Extensiones y nuevos dominios</h3>
+        <p>802.3cd (50/100/200G), 802.3cn (alcance de 40 km) y 802.3ch, Ethernet multigigabit para uso automotriz.</p>
+      </div>
+    </div>
+
+    <div class="item" style="--c:var(--c2)">
+      <div class="badge"><svg><use href="#ic-users"/></svg></div>
+      <div class="dot"></div>
+      <div class="arrow-decor"></div>
+      <div class="content">
+        <span class="year">2023</span>
+        <span class="rule"></span>
+        <h3>Nace el Ultra Ethernet Consortium</h3>
+        <p>AMD, Arista, Broadcom, Cisco, Meta, Microsoft y otros crean el UEC para IA y computación de alto rendimiento.</p>
+      </div>
+    </div>
+
+    <div class="item" style="--c:var(--c3)">
+      <div class="badge"><svg><use href="#ic-server"/></svg></div>
+      <div class="dot"></div>
+      <div class="arrow-decor"></div>
+      <div class="content">
+        <span class="year">2024</span>
+        <span class="rule"></span>
+        <h3>800 Gigabit Ethernet (802.3df)</h3>
+        <p>Ratificado cuatro meses antes de lo previsto, impulsado por la demanda de tráfico de inteligencia artificial.</p>
+      </div>
+    </div>
+
+    <div class="item" style="--c:var(--c4)">
+      <div class="badge"><svg><use href="#ic-check"/></svg></div>
+      <div class="dot"></div>
+      <div class="arrow-decor"></div>
+      <div class="content">
+        <span class="year">2025</span>
+        <span class="rule"></span>
+        <h3>Especificación Ultra Ethernet 1.0</h3>
+        <p>El UEC publica su versión 1.0, reimaginando el RDMA como una aplicación nativa de Ethernet para clústeres de IA.</p>
+      </div>
+    </div>
+
+    <div class="item" style="--c:var(--c1)">
+      <div class="badge"><svg><use href="#ic-bolt"/></svg></div>
+      <div class="dot"></div>
+      <div class="arrow-decor"></div>
+      <div class="content">
+        <span class="year">2026</span>
+        <span class="rule"></span>
+        <h3>Camino hacia 1,6 Tbps (802.3dj)</h3>
+        <p>El IEEE avanza hacia 200G/400G/800G/1,6T por carril; se demuestra interoperabilidad Ultra Ethernet en producción.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    Fuentes: Márquez Díaz, Pardo Sánchez y Pizarro Valencia, "Ethernet: Su origen, funcionamiento y rendimiento" (Ingeniería &amp; Desarrollo, Univ. del Norte, 2001) · IEEE 802.3 Working Group · Ethernet Alliance · Ultra Ethernet Consortium · Wikipedia / Grokipedia. Actualizado a agosto de 2026.
+  </footer>
+</div>
+
+</body>
+</html>
